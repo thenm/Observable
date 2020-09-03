@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
+import { interval, Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -8,22 +8,39 @@ import { interval, Subscription } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
   // Unsubscribing to an subscription      
-  private firstObservable: Subscription;
+  private firstObservableSubscription: Subscription;
+  private customObservableSubscription: Subscription;
   constructor() { }
 
   ngOnInit() {
     // interval returns an observable which emits a data stream after sepific time. 
     // Store the subscription which is returned by the subscribe. 
     // this.firstObservable will store the subscription
-    this.firstObservable = interval(1000).subscribe(count => {
-      console.log(count);
+    this.firstObservableSubscription = interval(1000).subscribe(count => {
+      console.log('from interval', count);
     });
+
+
+    // Custom Observable. You can create an Observable by 'Observable.create'
+
+    const customObservable = Observable.create(observer => {
+      let count = 0;
+      setInterval(() => {
+        observer.next(count);
+        count++
+      }, 1000)
+    })
+
+    this.customObservableSubscription = customObservable.subscribe(counter => {
+      console.log('from custom observable', counter)
+    })
   }
 
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
-    this.firstObservable.unsubscribe();
+    this.firstObservableSubscription.unsubscribe();
+    this.customObservableSubscription.unsubscribe();
   }
 
 }
