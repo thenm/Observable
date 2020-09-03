@@ -27,13 +27,29 @@ export class HomeComponent implements OnInit {
       let count = 0;
       setInterval(() => {
         observer.next(count);
+        if(count > 3) {
+          observer.error(new Error('Count is greater than 3'));
+        }
+
+        if( count == 2) {
+          observer.complete();
+        }
         count++
       }, 1000)
     })
 
-    this.customObservableSubscription = customObservable.subscribe(counter => {
-      console.log('from custom observable', counter)
-    })
+    this.customObservableSubscription = customObservable.subscribe(
+      counter => {
+        console.log('from custom observable', counter);
+      },
+      error => {
+        console.log(error);
+        alert(error.message);
+      },
+      () => {
+        console.log('Completed')
+      }
+    )
   }
 
   ngOnDestroy(): void {
